@@ -1,0 +1,12 @@
+{
+  "name": "faanau-zenn",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "preview": "zenn preview",
+    "new": "zenn new:article"
+  },
+  "devDependencies": {
+    "zenn-cli": "^0.2.7"
+  }
+}
