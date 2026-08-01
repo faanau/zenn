@@ -64,11 +64,19 @@ published: false  # ← true にすると公開
 
 - **上流プロジェクトへの言及** — kuromoji / kuroshiro の記事は他人のOSSを「放置されている」と
   書いている。事実だが当事者が読む可能性がある
-- **AI生成の開示** — AI関連の2本は、jpn.fan の記事がAI下書きであることを
-  前提に書いている。これは**公開判断そのもの**なので、必ず確認すること。
-  `ai-content-bottleneck-is-verification` は開示の是非に踏み込まず
-  「開示に耐える作り方をしているか」に寄せてあるが、記事を出すこと自体が
-  一定の開示になる
+- ~~**AI生成の開示**~~ — **解決済み（2026-08-02 確認）。** jpn.fan は既に
+  記事ページで開示している:
+
+  > AI then wrote up the analysis from those source quotes — every Japanese /
+  > English excerpt above is a byte-exact capture from the cited manga
+  > editions, not invented.
+  >
+  > Written up by Aine (愛音), the AI persona ... The picks, the cultural
+  > readings, and the final review are by Faanau, inc.
+
+  「AIが書いた」だけでなく「引用は捏造ではない」「選定と最終レビューは人間」まで
+  書いてある。AI関連2本が主張している「開示に耐える作り方」と一致しているので、
+  記事が site と矛盾しない。**追加の判断は不要。**
 - **法人番号の露出** — `entity-linkage-corporate-number` に記載。公開情報だが意図した露出か
 - **自社の運用ミス** — `two-repos-one-bucket-incidents` は3件書いている。技術記事としては
   誠実さが強みだが、取引先が読む可能性も考える
