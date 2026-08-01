@@ -35,8 +35,13 @@ published: false  # ← true にすると公開
 1. `zod-silently-drops-undeclared-fields` — 短く汎用的。最初の1本は読み切れる長さが良い
 2. `gsc-url-inspection-api-audit` — 実用価値が高く、スクリプトが持ち帰れる
 3. `oss-kuromoji-revival` — 読み物として最強。上2本で実績を作ってから
-4. `npm-trusted-publishing-pitfalls` — 情報が少ない領域
-5. 以降は反応を見て決める
+4. `ai-content-bottleneck-is-verification` — AI活用は関心が高い。ただし
+   **1〜3で技術的な信用を作ってから**出す。いきなりAIの話から入ると、
+   よくある「AIで効率化しました」記事に埋もれる
+5. `npm-trusted-publishing-pitfalls` — 情報が少ない領域
+6. `ai-agent-adopting-abandoned-oss` — 失敗を並べる記事なので、
+   実績（1〜3）が見えている状態で出す方が説得力がある
+7. 以降は反応を見て決める
 
 ## なぜ書くか
 
@@ -59,8 +64,11 @@ published: false  # ← true にすると公開
 
 - **上流プロジェクトへの言及** — kuromoji / kuroshiro の記事は他人のOSSを「放置されている」と
   書いている。事実だが当事者が読む可能性がある
-- **AI生成の開示** — jpn.fan の記事がAI下書きであることに、これらの記事は触れていない。
-  触れるべきかは方針判断
+- **AI生成の開示** — AI関連の2本は、jpn.fan の記事がAI下書きであることを
+  前提に書いている。これは**公開判断そのもの**なので、必ず確認すること。
+  `ai-content-bottleneck-is-verification` は開示の是非に踏み込まず
+  「開示に耐える作り方をしているか」に寄せてあるが、記事を出すこと自体が
+  一定の開示になる
 - **法人番号の露出** — `entity-linkage-corporate-number` に記載。公開情報だが意図した露出か
 - **自社の運用ミス** — `two-repos-one-bucket-incidents` は3件書いている。技術記事としては
   誠実さが強みだが、取引先が読む可能性も考える
@@ -95,3 +103,5 @@ npx zenn preview
 | `keyword-cannibalisation-detector` | 37語のスタブが2000語の記事を押さえつけていた |
 | `seo-title-vs-editorial-headline` | URLスラッグの方が`<title>`より検索語を含んでいた |
 | `entity-linkage-corporate-number` | 法人サイトと事業サイトが構造化データ上無関係だった |
+| `ai-content-bottleneck-is-verification` | AIに書かせるときのボトルネックは生成ではなく検証だった |
+| `ai-agent-adopting-abandoned-oss` | AIエージェントに8年放置のOSSを引き取らせた |
