@@ -1,6 +1,6 @@
 name: Publish next
 
-# 記事を1本ずつ自動公開する。
+# 記事を1本ずつ自動公開し、結果をメールで知らせる。
 #
 # 公開されるのは publish-queue.txt に書かれた slug だけ。書いていない記事は
 # published: false のまま残る。キューが承認の記録であり、下書きと公開の間に
@@ -10,6 +10,10 @@ name: Publish next
 # PUBLISH_MIN_DAYS（既定10日）で判断する。GitHub の cron 構文は
 # 「隔週」を書けないうえ、週次 + 経過日数判定にしておくと実行が
 # 1回飛んでも間隔が狂わない。
+#
+# メールは「公開した」ときと「壊れた」ときだけ送る。待機期間中で何もしない
+# 週は無言にしておく。それが大半なので、毎週「何もありませんでした」を送ると
+# 読まれなくなり、肝心の1通も一緒に読まれなくなる。
 on:
   schedule:
     # 毎週火曜 09:00 JST（= 00:00 UTC）。平日の朝がいちばん読まれる。
@@ -24,6 +28,10 @@ on:
         description: '待機期間を無視して即座に公開する'
         type: boolean
         default: false
+      notify-test:
+        description: 'メール送信だけ試す（公開しない）'
+        type: boolean
+        default: false
 
 # 同時実行を禁じる。手動起動とスケジュールが重なって2本出るのを防ぐ。
 concurrency:
@@ -35,6 +43,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      # SES 送信ロールを OIDC で引き受けるため。AWS の鍵はこのリポジトリに
+      # 置かない（npm 公開と同じ方式）。
+      id-token: write
     steps:
       - uses: actions/checkout@v7
         with:
@@ -47,6 +58,7 @@ jobs:
 
       - name: Select and publish
         id: pick
+        if: inputs.notify-test != true
         env:
           PUBLISH_MIN_DAYS: '10'
         run: |
@@ -68,6 +80,44 @@ jobs:
           ${{ steps.pick.outputs.remaining }} article(s) left in the queue."
           git push
 
+      # 成否どちらでも通知したいので always()。ここより前の失敗は
+      # このステップでは握りつぶさず、下の Notify (failed) が拾う。
+      - name: Configure AWS credentials
+        if: always()
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ secrets.AWS_NOTIFY_ROLE_ARN }}
+          aws-region: ap-northeast-1
+
+      - name: Notify (published)
+        if: success() && steps.pick.outputs.slug != ''
+        env:
+          NOTIFY_KIND: published
+          NOTIFY_TO: ${{ secrets.NOTIFY_EMAIL_TO }}
+          NOTIFY_SLUG: ${{ steps.pick.outputs.slug }}
+          NOTIFY_TITLE: ${{ steps.pick.outputs.title }}
+          PUBLISH_MIN_DAYS: '10'
+        run: node scripts/notify.mjs
+
+      - name: Notify (test)
+        if: inputs.notify-test == true
+        env:
+          NOTIFY_KIND: test
+          NOTIFY_TO: ${{ secrets.NOTIFY_EMAIL_TO }}
+          PUBLISH_MIN_DAYS: '10'
+        run: node scripts/notify.mjs
+
+      # 送信に失敗したらこのステップも落ちる。それでよく、ランが赤くなれば
+      # GitHub 標準の「ワークフローが失敗しました」メールが最後の砦になる。
+      # 黙って届かない通知より、赤くなって別経路で届く方がいい。
+      - name: Notify (failed)
+        if: failure()
+        env:
+          NOTIFY_KIND: failed
+          NOTIFY_TO: ${{ secrets.NOTIFY_EMAIL_TO }}
+          NOTIFY_SLUG: ${{ steps.pick.outputs.slug }}
+        run: node scripts/notify.mjs
+
       - name: Summary
         if: always()
         run: |
@@ -79,6 +129,8 @@ jobs:
             echo "https://zenn.dev/faanau/articles/${{ steps.pick.outputs.slug }}" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "キューの残り: ${{ steps.pick.outputs.remaining }} 本" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ inputs.notify-test }}" = "true" ]; then
+            echo "メール送信のテストのみ。公開はしていない。" >> $GITHUB_STEP_SUMMARY
           else
             echo "今回は公開なし（待機期間中、またはキューが空）。" >> $GITHUB_STEP_SUMMARY
           fi

@@ -48,7 +48,36 @@ publish-queue.txt                    出してよい記事のリスト = 承認�
 gh workflow run publish-next.yml -f dry-run=true    # 何が起きるか見るだけ
 gh workflow run publish-next.yml -f dry-run=false   # 待機期間を尊重して公開
 gh workflow run publish-next.yml -f dry-run=false -f force=true   # 即座に
+gh workflow run publish-next.yml -f notify-test=true # メール送信だけ試す
 ```
+
+### 通知
+
+**記事が出たとき**と**壊れたとき**にメールが飛ぶ。待機期間中で何もしない週は
+無言。それが大半なので、毎週「何もありませんでした」を送ると読まれなくなり、
+肝心の1通も一緒に読まれなくなる。
+
+```
+scripts/notify.mjs   本文を組み立てて SES で送る
+```
+
+送信は GitHub OIDC → IAM ロール → SES。**AWS の鍵はこのリポジトリに無い**
+（npm 公開と同じ方式）。リポジトリが public なので、宛先とロール ARN も
+リポジトリ Secrets に置いてある。
+
+| | |
+|---|---|
+| `NOTIFY_EMAIL_TO` | 宛先 |
+| `AWS_NOTIFY_ROLE_ARN` | `zenn-publish-notifier`。信頼するのは `repo:faanau/zenn:*` のみ、権限は `ses:SendEmail` のみ、送信元も `noreply@faanau.co.jp` に固定 |
+
+**送信に失敗したらワークフローごと赤くしている。** 握りつぶすと、通知が届かない
+ことに気づく手段が無くなる。赤くしておけば GitHub 標準の「ワークフローが
+失敗しました」メールが最後の砦になる。
+
+失敗メールは、公開処理まで進んでいたかどうかで文面が変わる。commit と push の
+どちらで落ちたかで公開済みか未公開かが変わるので、そこを断定せずに確認手順を
+書いてある。どちらにせよ**二重に公開されることはない**（キューは公開済みを
+飛ばすため）。
 
 ### ペース
 

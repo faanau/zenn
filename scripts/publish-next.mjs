@@ -16,30 +16,15 @@
  * fires weekly but publishes only when enough time has passed is also
  * robust to a missed or delayed run.
  */
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
-import { join, resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
+import { REPO, articlePath, readQueue, pendingSlugs, titleOf } from './queue.mjs';
 
-const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const QUEUE = join(REPO, 'publish-queue.txt');
 const MIN_DAYS = Number(process.env.PUBLISH_MIN_DAYS ?? 10);
 
 const args = process.argv.slice(2);
 const DRY_RUN = args.includes('--dry-run');
 const FORCE = args.includes('--force');
-
-/** Ordered slugs, comments and blanks removed. */
-function readQueue() {
-  return readFileSync(QUEUE, 'utf8')
-    .split('\n')
-    .map((l) => l.trim())
-    .filter((l) => l && !l.startsWith('#'));
-}
-
-function isPublished(file) {
-  return /^published:\s*true\s*$/m.test(readFileSync(file, 'utf8'));
-}
 
 /**
  * Days since this script last published something.
@@ -63,14 +48,7 @@ if (queue.length === 0) {
   process.exit(0);
 }
 
-const pending = queue.filter((slug) => {
-  const file = join(REPO, 'articles', `${slug}.md`);
-  if (!existsSync(file)) {
-    console.warn(`  WARNING: ${slug} is queued but articles/${slug}.md does not exist`);
-    return false;
-  }
-  return !isPublished(file);
-});
+const pending = pendingSlugs({ warn: true });
 
 if (pending.length === 0) {
   console.log(`every queued article is already published (${queue.length} in queue).`);
@@ -87,7 +65,7 @@ if (!FORCE && elapsed < MIN_DAYS) {
 }
 
 const slug = pending[0];
-const file = join(REPO, 'articles', `${slug}.md`);
+const file = articlePath(slug);
 const before = readFileSync(file, 'utf8');
 const after = before.replace(/^published:\s*false\s*$/m, 'published: true');
 
@@ -96,7 +74,7 @@ if (after === before) {
   process.exit(1);
 }
 
-const title = (before.match(/^title:\s*"(.*)"\s*$/m) || [])[1] ?? slug;
+const title = titleOf(slug);
 
 if (DRY_RUN) {
   console.log(`would publish: ${slug}`);
@@ -111,7 +89,7 @@ console.log(`published: ${slug}`);
 console.log(`  ${title}`);
 console.log(`  ${pending.length - 1} left in the queue`);
 
-// Consumed by the workflow to build the commit message.
+// Consumed by the workflow to build the commit message and the notification.
 if (process.env.GITHUB_OUTPUT) {
   writeFileSync(
     process.env.GITHUB_OUTPUT,
