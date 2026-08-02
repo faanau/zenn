@@ -61,18 +61,26 @@ gh workflow run publish-next.yml -f dry-run=false -f force=true   # 即座に
 
 ### 公開順
 
-足場を作ってから強い記事を出す。何も無いアカウントで長文を出しても読まれない。
+`publish-queue.txt` がその記録。順序の考え方もそこに書いてある。
 
-1. `zod-silently-drops-undeclared-fields` — 短く汎用的。最初の1本は読み切れる長さが良い
-2. `gsc-url-inspection-api-audit` — 実用価値が高く、スクリプトが持ち帰れる
-3. `oss-kuromoji-revival` — 読み物として最強。上2本で実績を作ってから
-4. `ai-content-bottleneck-is-verification` — AI活用は関心が高い。ただし
-   **1〜3で技術的な信用を作ってから**出す。いきなりAIの話から入ると、
-   よくある「AIで効率化しました」記事に埋もれる
-5. `npm-trusted-publishing-pitfalls` — 情報が少ない領域
-6. `ai-agent-adopting-abandoned-oss` — 失敗を並べる記事なので、
-   実績（1〜3）が見えている状態で出す方が説得力がある
-7. 以降は反応を見て決める
+```
+ ✓ zod-silently-drops-undeclared-fields   2026-08-02 公開済み
+ 1 gsc-url-inspection-api-audit
+ 2 oss-kuromoji-revival
+ 3 ai-content-bottleneck-is-verification
+ 4 npm-trusted-publishing-pitfalls
+ 5 two-repos-one-bucket-incidents
+ 6 ai-agent-adopting-abandoned-oss
+ 7 when-to-change-urls-subdomain-consolidation
+ 8 verify-dont-generate-furigana
+ 9 thin-page-gate-noindex-not-404
+10 keyword-cannibalisation-detector
+11 cloudfront-function-10kb-limit
+12 seo-title-vs-editorial-headline
+13 entity-linkage-corporate-number
+```
+
+10日間隔で約4か月半ぶん。手を入れなくても流れ続ける。
 
 ## なぜ書くか
 
@@ -89,14 +97,22 @@ gh workflow run publish-next.yml -f dry-run=false -f force=true   # 即座に
 - **jpn.fan への言及は末尾に1回だけ**、文脈がある場合のみ
 - **自分の失敗を隠さない。** 隠した瞬間に宣伝臭くなる
 
-## 公開前チェック
+## 公開前チェック（2026-08-02 全件承認済み）
 
-下書きには判断が要る箇所がある。**公開前に必ず目を通すこと。**
+14本すべて通読のうえ、以下3点は「そのまま出す」と判断済み。
+**新しい記事を書いたときは、同じ3点を見てからキューに足すこと。**
 
-- **上流プロジェクトへの言及** — kuromoji / kuroshiro の記事は他人のOSSを「放置されている」と
-  書いている。事実だが当事者が読む可能性がある
-- ~~**AI生成の開示**~~ — **解決済み（2026-08-02 確認）。** jpn.fan は既に
-  記事ページで開示している:
+- **上流プロジェクトへの言及** — `oss-kuromoji-revival` が実質唯一。
+  批判ではなく分析として書けており、「解析器そのものは健在」「腐っていたのは
+  周辺だけ」は本体設計への評価になっている。上流にPRを出したこと、
+  パッケージ名を乗っ取っていないことも本文に明記してある
+- **法人番号** — `entity-linkage-corporate-number` の JSON-LD 実例に実物を掲載。
+  国税庁の公表情報であり、既に jpn.fan と faanau.co.jp 双方の構造化データに
+  出ている。ダミーに替えると「実際にこう運用している」が伝わらない
+- **自社の運用ミス** — 5本にまたがる。この種の記事は失敗を隠した瞬間に
+  宣伝になるので、誠実さを取る。内容は新規サイト立ち上げで踏んだ罠であって、
+  受託案件の話ではない
+- ~~**AI生成の開示**~~ — 解決済み。jpn.fan が既に記事ページで開示している:
 
   > AI then wrote up the analysis from those source quotes — every Japanese /
   > English excerpt above is a byte-exact capture from the cited manga
@@ -104,13 +120,6 @@ gh workflow run publish-next.yml -f dry-run=false -f force=true   # 即座に
   >
   > Written up by Aine (愛音), the AI persona ... The picks, the cultural
   > readings, and the final review are by Faanau, inc.
-
-  「AIが書いた」だけでなく「引用は捏造ではない」「選定と最終レビューは人間」まで
-  書いてある。AI関連2本が主張している「開示に耐える作り方」と一致しているので、
-  記事が site と矛盾しない。**追加の判断は不要。**
-- **法人番号の露出** — `entity-linkage-corporate-number` に記載。公開情報だが意図した露出か
-- **自社の運用ミス** — `two-repos-one-bucket-incidents` は3件書いている。技術記事としては
-  誠実さが強みだが、取引先が読む可能性も考える
 
 ## 転載
 
