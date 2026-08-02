@@ -1,0 +1,40 @@
+# 自動公開キュー
+#
+# ここに書いた slug だけが、上から順に自動公開される。
+# 空行と # 行は無視。書いていない記事は絶対に公開されない。
+#
+# .github/workflows/publish-next.yml が週1で起動し、
+# 前回の自動公開から PUBLISH_MIN_DAYS（既定10日）経っていれば1本出す。
+#
+# ── 追加するときの手順 ──────────────────────────────
+#   1. 記事を読む
+#   2. README の「公開前チェック」3項目に該当しないか確認する
+#   3. slug を1行足して push
+#
+# 承認していない記事をここに書かないこと。これが唯一の歯止めになっている。
+#
+# ── 各記事の懸案（2026-08-02 時点） ─────────────────
+#   上流批判あり   oss-kuromoji-revival
+#                  npm-trusted-publishing-pitfalls
+#                  verify-dont-generate-furigana
+#                  when-to-change-urls-subdomain-consolidation
+#                  ai-agent-adopting-abandoned-oss
+#   法人番号あり   entity-linkage-corporate-number
+#   自社ミス記述   two-repos-one-bucket-incidents
+#                  keyword-cannibalisation-detector
+#                  ai-content-bottleneck-is-verification
+#                  ai-agent-adopting-abandoned-oss
+#                  entity-linkage-corporate-number
+#
+#   懸案なし       gsc-url-inspection-api-audit
+#                  cloudfront-function-10kb-limit
+#                  seo-title-vs-editorial-headline
+#                  thin-page-gate-noindex-not-404
+#
+# 「懸案なし」は自動判定ではなく目視。追加前に自分で読むこと。
+# ────────────────────────────────────────────────
+
+gsc-url-inspection-api-audit
+cloudfront-function-10kb-limit
+seo-title-vs-editorial-headline
+thin-page-gate-noindex-not-404

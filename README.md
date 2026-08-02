@@ -19,6 +19,37 @@ published: false  # ← true にすると公開
 ---
 ```
 
+### 自動公開
+
+`publish-queue.txt` に書いた slug が、**上から順に自動で公開される**。
+
+```
+.github/workflows/publish-next.yml   毎週火曜 09:00 JST に起動
+scripts/publish-next.mjs             10日以上空いていれば1本出す
+publish-queue.txt                    出してよい記事のリスト = 承認の記録
+```
+
+**キューに書いていない記事は絶対に公開されない。** `published: false` のまま残る。
+これが下書きと公開の間に立っている唯一のものなので、ここを緩めないこと。
+
+記事を追加する手順:
+
+1. 記事を読む
+2. 下の「公開前チェック」3項目に該当しないか確認する
+3. `publish-queue.txt` に1行足して push
+
+間隔は cron ではなくスクリプト側で判定している。GitHub の cron は「隔週」を
+書けないうえ、週次 + 経過日数判定なら実行が1回飛んでも間隔が狂わない。
+経過日数は git log の `publish: ` コミットから読むので、手動公開も勘定に入る。
+
+手動で試すとき:
+
+```
+gh workflow run publish-next.yml -f dry-run=true    # 何が起きるか見るだけ
+gh workflow run publish-next.yml -f dry-run=false   # 待機期間を尊重して公開
+gh workflow run publish-next.yml -f dry-run=false -f force=true   # 即座に
+```
+
 ### ペース
 
 **1〜2週間に1本。** まとめて出さない。

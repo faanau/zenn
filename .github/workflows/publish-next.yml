@@ -1,0 +1,84 @@
+name: Publish next
+
+# 記事を1本ずつ自動公開する。
+#
+# 公開されるのは publish-queue.txt に書かれた slug だけ。書いていない記事は
+# published: false のまま残る。キューが承認の記録であり、下書きと公開の間に
+# 立っている唯一のものなので、ここを緩めないこと。
+#
+# 毎週起動するが、実際に出すかは scripts/publish-next.mjs が
+# PUBLISH_MIN_DAYS（既定10日）で判断する。GitHub の cron 構文は
+# 「隔週」を書けないうえ、週次 + 経過日数判定にしておくと実行が
+# 1回飛んでも間隔が狂わない。
+on:
+  schedule:
+    # 毎週火曜 09:00 JST（= 00:00 UTC）。平日の朝がいちばん読まれる。
+    - cron: '0 0 * * 2'
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: '何が起きるか表示するだけ（公開しない）'
+        type: boolean
+        default: true
+      force:
+        description: '待機期間を無視して即座に公開する'
+        type: boolean
+        default: false
+
+# 同時実行を禁じる。手動起動とスケジュールが重なって2本出るのを防ぐ。
+concurrency:
+  group: publish-next
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # 経過日数を git log から読むので、浅いクローンでは足りない。
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
+      - name: Select and publish
+        id: pick
+        env:
+          PUBLISH_MIN_DAYS: '10'
+        run: |
+          node scripts/publish-next.mjs \
+            ${{ inputs.dry-run == true && '--dry-run' || '' }} \
+            ${{ inputs.force == true && '--force' || '' }}
+
+      - name: Commit and push
+        if: steps.pick.outputs.slug != ''
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add articles/
+          git commit -m "publish: ${{ steps.pick.outputs.slug }}
+
+          ${{ steps.pick.outputs.title }}
+
+          Released from publish-queue.txt by the scheduled workflow.
+          ${{ steps.pick.outputs.remaining }} article(s) left in the queue."
+          git push
+
+      - name: Summary
+        if: always()
+        run: |
+          if [ -n "${{ steps.pick.outputs.slug }}" ]; then
+            echo "### 公開しました" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**${{ steps.pick.outputs.title }}**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "https://zenn.dev/faanau/articles/${{ steps.pick.outputs.slug }}" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "キューの残り: ${{ steps.pick.outputs.remaining }} 本" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "今回は公開なし（待機期間中、またはキューが空）。" >> $GITHUB_STEP_SUMMARY
+          fi
