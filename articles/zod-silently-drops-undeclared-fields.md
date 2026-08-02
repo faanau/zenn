@@ -3,7 +3,7 @@ title: "コードを移植したら Zod が黙って機能を無効にしてい�
 emoji: "🕳️"
 type: "tech"
 topics: ["zod", "astro", "typescript", "typesafety"]
-published: false
+published: true
 ---
 
 既存プロジェクトのコンテンツ管理まわりを、新しいリポジトリに移植した。しばらくして、移植先でこういうコードを見つけた。
