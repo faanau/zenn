@@ -68,7 +68,24 @@ scripts/notify.mjs   本文を組み立てて SES で送る
 | | |
 |---|---|
 | `NOTIFY_EMAIL_TO` | 宛先 |
-| `AWS_NOTIFY_ROLE_ARN` | `zenn-publish-notifier`。信頼するのは `repo:faanau/zenn:*` のみ、権限は `ses:SendEmail` のみ、送信元も `noreply@faanau.co.jp` に固定 |
+| `AWS_NOTIFY_ROLE_ARN` | `zenn-publish-notifier`。権限は `ses:SendEmail` のみ、送信元も `noreply@faanau.co.jp` に固定 |
+
+信頼ポリシーの `sub` は**2つの形を許可している**。
+
+```
+repo:faanau@36529324/zenn@1319686958:*   ← 実際に発行されているのはこちら
+repo:faanau/zenn:*
+```
+
+GitHub は OIDC の subject claim を、リネームで壊れない**不変ID付きの形**に
+移行している。この repo は既に新形式で、`repo:faanau/zenn:*` だけを書いた
+信頼ポリシーは `Not authorized to perform sts:AssumeRoleWithWebIdentity` で
+落ちる。エラーは「権限が無い」としか言わないので、原因が sub の形だと
+気づきにくい。自分のリポジトリの実際の形はここで確認できる。
+
+```
+gh api /repos/faanau/zenn/actions/oidc/customization/sub
+```
 
 **送信に失敗したらワークフローごと赤くしている。** 握りつぶすと、通知が届かない
 ことに気づく手段が無くなる。赤くしておけば GitHub 標準の「ワークフローが
