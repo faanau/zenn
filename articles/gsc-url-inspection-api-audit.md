@@ -3,7 +3,7 @@ title: "Search Console の画面では「どのURLが未登録か」が分から
 emoji: "🔎"
 type: "tech"
 topics: ["seo", "searchconsole", "googleapi", "python"]
-published: false
+published: true
 ---
 
 Search Console のインデックス作成レポートは、こういう形で結果を出す。
