@@ -3,7 +3,7 @@ title: "週35万DLのnpmパッケージが8年放置されていた理由は、I
 emoji: "🈁"
 type: "tech"
 topics: ["npm", "oss", "javascript", "自然言語処理", "日本語"]
-published: false
+published: true
 ---
 
 `kuromoji` は日本語形態素解析器の JavaScript 実装で、週に約 336,000 回ダウンロードされている。最後にリリースされたのは **2018年3月19日**だ。
