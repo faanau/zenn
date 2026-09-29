@@ -3,7 +3,7 @@ title: "npm Trusted Publishing に辿り着くまでに踏んだ地雷を全部�
 emoji: "🔐"
 type: "tech"
 topics: ["npm", "githubactions", "oidc", "security", "cicd"]
-published: false
+published: true
 ---
 
 npm パッケージを1本公開するのに、想定の何倍も手間取った。結果的には **Trusted Publishing（OIDC）** に落ち着いて、これが正解だったのだが、そこに至るまでに踏んだものを順番に書いておく。日本語の情報が少ない領域で、しかもどれも「言われてみれば当然」なのに事前には分からない類だった。
