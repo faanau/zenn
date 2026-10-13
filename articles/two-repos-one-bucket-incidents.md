@@ -3,7 +3,7 @@ title: "1つのS3バケットを2リポジトリで共有したら、デプロ�
 emoji: "🪣"
 type: "tech"
 topics: ["aws", "s3", "cloudfront", "cicd", "運用"]
-published: false
+published: true
 ---
 
 1つのサイトを2つのリポジトリから配信している。歴史的経緯で、古い方（v1）と新しい方（v2）が別々に存在し、**同じ S3 バケットに書き込む**。CloudFront も1つ。
