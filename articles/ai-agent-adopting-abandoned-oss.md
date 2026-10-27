@@ -3,7 +3,7 @@ title: "AIエージェントに8年放置のOSSを引き取らせた — 人間�
 emoji: "🤖"
 type: "idea"
 topics: ["ai", "oss", "開発手法", "npm"]
-published: false
+published: true
 ---
 
 週35万DLされながら8年間更新の止まっていた npm パッケージを、AI エージェントに引き取らせた。調査からフォーク、バグ修正、CI 構築、npm 公開、上流への PR まで、実作業のほとんどをエージェントが進めた。
