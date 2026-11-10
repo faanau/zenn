@@ -3,7 +3,7 @@ title: "URLを変えるなら「Googleがまだ知らないうち」— サブ�
 emoji: "🧭"
 type: "tech"
 topics: ["seo", "cloudfront", "アーキテクチャ", "運用"]
-published: false
+published: true
 ---
 
 SEO の記事はたいてい「URLは変えるな」で終わる。正しいのだが、そこで思考が止まると、**本当に変えるべき状況で動けなくなる**。
