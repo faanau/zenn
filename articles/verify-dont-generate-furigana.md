@@ -3,7 +3,7 @@ title: "形態素解析器は「ふりがなを振る」より「振られたふ
 emoji: "🔬"
 type: "tech"
 topics: ["自然言語処理", "日本語", "kuromoji", "品質管理"]
-published: false
+published: true
 ---
 
 漫画の日本語を英語圏の学習者向けに解説するサイトを運営している。全記事の日本語原文にふりがなが付いている。
